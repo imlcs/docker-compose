@@ -1,0 +1,13 @@
+version: '2'
+services:
+    solr:
+        image: docker.io/solr
+        restart: always
+        volumes:
+            - /etc/localtime:/etc/localtime
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /data/solr:/opt/solr
+        ports:
+            - 8983:8983
+        hostname: solr
+        container_name: solr

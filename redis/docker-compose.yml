@@ -1,0 +1,14 @@
+version: '2' 
+services:
+    redis:
+        image: redis:3
+        volumes: 
+            - /etc/localtime:/etc/localtime
+              #- ./conf:/etc/redis
+              #- /data/redis:/redis
+        restart: always
+        container_name: redis
+        hostname: redis
+        ports: 
+            - "6379:6379"
+        #command: redis-server /etc/redis/redis.conf

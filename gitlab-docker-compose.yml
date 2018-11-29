@@ -1,0 +1,70 @@
+version: '2'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:10.8.4-ce.0
+    restart: always
+    hostname: code.domain.cc
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://code.domain.cc'
+        registry_external_url 'http://code.domain.cc:5500'
+        gitlab_rails['time_zone'] = 'PRC'
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = ''
+        gitlab_rails['smtp_port'] = 465
+        gitlab_rails['smtp_user_name'] = ''
+        gitlab_rails['smtp_password'] = ''
+        gitlab_rails['smtp_authentication'] = 'login'
+        gitlab_rails['smtp_enable_starttls_auto'] = true
+        gitlab_rails['smtp_tls'] = true
+        gitlab_rails['git_max_size'] = '524288000'
+        gitlab_rails['gitlab_email_from'] = 'notify@domain.com'
+        gitlab_rails['ldap_enabled'] = true
+        gitlab_rails['ldap_servers'] = YAML.load <<-'EOS'
+          main:
+            label: 'LDAP'
+            host: 'jenkins.domain.cc'
+            port: 389
+            uid: 'uid'
+            bind_dn: 'cn=Manager,dc=kqc,dc=cc'
+            password: '{SSHA}RGzpmEs4MBW6/vphfVYi7xj78lGLqLCH'
+            encryption: 'plain'
+            active_directory: true
+            allow_username_or_email_login: false
+            base: 'ou=gitlab,dc=kqc,dc=cc'
+            user_filter: ''
+            attributes:
+              username: ['uid', 'userid', 'sAMAccountName']
+              email: ['mail', 'email', 'userPrincipalName']
+              name: 'cn'
+              first_name: 'givenName'
+              last_name:  'sn'
+        EOS
+        gitlab_rails['registry_enabled'] = true
+        gitlab_rails['registry_host'] = "code.domain.cc"
+        gitlab_rails['registry_port'] = 5500
+        gitlab_rails['registry_api_url'] = "http://localhost:5000"
+        gitlab_rails['registry_path'] = "/var/opt/gitlab/gitlab-rails/shared/registry"
+        gitlab_rails['registry_issuer'] = "omnibus-gitlab-issuer"
+    ports:
+      - '80:80'
+      - '443:443'
+      - '5500:5500'
+    volumes:
+      - ./data/gitlab/config:/etc/gitlab
+      - ./data/gitlab/data:/var/opt/gitlab
+      - ./data/gitlab/logs:/var/log/gitlab
+      #- ./data/gitlab/hooks:/opt/gitlab/embedded/service/gitlab-shell/hooks
+      #- ./data/gitlab/hooks:/opt/gitlab/embedded/share/git-core/templates/hooks/
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    restart: always
+    extra_hosts:
+      - jenkins.domain.cc:192.168.0.65
+      - code.domain.cc:192.168.0.75
+      - redmine.domain.cc:192.168.0.67
+    depends_on:
+      - gitlab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/gitlab-runner:/etc/gitlab-runner

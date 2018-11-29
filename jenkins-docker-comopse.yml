@@ -1,0 +1,17 @@
+version: "3"
+services:
+    jenkins:
+        container_name: jenkins
+        image: jenkins
+        ports:
+        - "8080:8080"
+        - "50000:50000"
+        environment:
+        - JAVA_OPTS=-Duser.timezone=Asia/Shanghai
+        volumes:
+        - $PWD/jenkins_home:/var/jenkins_home
+        restart: always
+
+# 执行以下命令启动容器
+# mkdir jenkins_home && chown 1000:1000 jenkins_home && docker-comose up -d
+# cat jenkins_home/secrets/initialAdminPassword 获取jenkins安装密码

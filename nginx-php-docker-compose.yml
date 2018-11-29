@@ -1,0 +1,34 @@
+version: '2'
+services:
+  nginx:
+    restart: always
+    image: nginx
+    hostname: nginx
+    volumes:
+    - $PWD/nginx:/etc/nginx
+    - /etc/localtime:/etc/localtime
+    links:
+    - php:php
+    ports:
+    - 80:80
+    - 443:443
+    extra_hosts:
+    - redis:192.168.30.43
+    - mysql:192.168.30.43
+    - mongo:192.168.30.43
+    - solr:192.168.30.43
+    - app:192.168.30.42
+  php:
+    #privileged: true
+    restart: always
+    image: registry.cn-hangzhou.aliyuncs.com/kuaiqiangche/php7.1:180611
+    hostname: php
+    volumes:
+    - $PWD/php:/etc/php
+    - /etc/localtime:/etc/localtime
+    command: php-fpm7.1 -F
+    extra_hosts:
+    - redis:192.168.30.43
+    - mysql:192.168.30.43
+    - mongo:192.168.30.43
+    - solr:192.168.30.43

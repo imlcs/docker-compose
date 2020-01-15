@@ -21,7 +21,7 @@ services:
   php:
     #privileged: true
     restart: always
-    image: registry.cn-hangzhou.aliyuncs.com/kuaiqiangche/php7.1:180611
+    image: a
     hostname: php
     volumes:
     - $PWD/php:/etc/php

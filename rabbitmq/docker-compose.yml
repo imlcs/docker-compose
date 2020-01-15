@@ -1,0 +1,14 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - ./data/:/var/lib/rabbitmq
+      - /etc/localtime:/etc/localtime
+    restart: always
+    ports:
+      - 15671:15671
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: root #默认为guest
+      RABBITMQ_DEFAULT_PASS: mq.yuwangkedao.com #默认为guest
